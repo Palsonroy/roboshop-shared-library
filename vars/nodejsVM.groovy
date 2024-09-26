@@ -92,33 +92,34 @@ def call(Map configMap){
             }
             stage('Deploy') {
                 when {
-                    expression {
+                    expression{
                         params.Deploy
                     }
                 }
                 steps {
-                     script {
-                        def params =[
-                            string(name: 'version', value: "$packageVersion"),
-                            string(name: 'environment', value: "dev")
-                            //booleanParam(name: 'Create', value: "${params.Deploy}")
-                              booleanParam(name: 'Create', value: "${params.Deploy}")
-                        ]
-                        build job: "../${configMap.component}-deploy", wait: true, parameters: params
-                    }
-
+                    script {
+                            def params = [
+                                string(name: 'version', value: "$packageVersion"),
+                                string(name: 'environment', value: "dev")
+                                booleanParam(name: 'Create', value: "${params.Deploy}")
+                            ]
+                            build job: "../${configMap.component}-deploy", wait: true, parameters: params
+                        }
                 }
             }
-    
-        
         }
-
+        // post build
         post { 
             always { 
                 echo 'I will always say Hello again!'
                 deleteDir()
             }
+            failure { 
+                echo 'this runs when pipeline is failed, used generally to send some alerts'
+            }
+            success{
+                echo 'I will say Hello when pipeline is success'
+            }
         }
     }
-
 }
